@@ -273,6 +273,9 @@ final class ToolGuideTest extends TestCase {
 		$this->assertStringContainsString('"Tool guide"', $instructions);
 		$this->assertStringContainsString('confirm=true', $instructions);
 		$this->assertStringContainsString('confirmation.mode is mandate', $instructions);
+		$this->assertStringContainsString('continue without asking again', $instructions);
+		$this->assertStringContainsString('explicitly requested the planned write', $instructions);
+		$this->assertStringContainsString('Follow any additional confirmations required by the plan', $instructions);
 		$this->assertStringContainsString('confirmation.mode is browser', $instructions);
 		$this->assertStringContainsString('Never invent an approval_id', $instructions);
 	}
