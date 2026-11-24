@@ -50,6 +50,9 @@ final class WriteApprovals {
 				$arguments[$field] = $plan[$field];
 			}
 		}
+		if ($name === 'files_delete' && is_int($plan['id'] ?? null)) {
+			$arguments['id'] = $plan['id'];
+		}
 		$id = $approvals->stage($name, $uid, $arguments, $text);
 		$url = $urls->linkToRouteAbsolute('mcp.write_approval.show', ['id' => $id]);
 		$mandated = $approvals->underMandate($uid);

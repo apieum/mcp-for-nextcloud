@@ -11,6 +11,8 @@ use OCA\Mcp\Mcp\Confirmation\AccountMandate;
 use OCA\Mcp\Mcp\Confirmation\ApprovalStore;
 use OCA\Mcp\Mcp\Confirmation\PlanState;
 use OCA\Mcp\Mcp\Confirmation\WriteApprovals;
+use OCA\Mcp\Mcp\Tools\ToolModule;
+use OCP\IURLGenerator;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Config\IUserConfig;
 use OCP\IConfig;
@@ -77,5 +79,16 @@ final class WriteApprovalsTest extends TestCase {
 		self::assertFalse($execution->authorize($id, 'edit', 'alice', $args));
 		self::assertTrue($execution->approve($id, 'alice'));
 		self::assertTrue($execution->authorize($id, 'edit', 'alice', $args));
+		$urls = $this->createMock(IURLGenerator::class);
+		$urls->method('linkToRouteAbsolute')->willReturn('https://cloud.test/approval');
+		$module = $this->createMock(ToolModule::class);
+		$definition = ['name' => 'files_delete', 'inputSchema' => ['properties' => ['id' => [], 'etag' => []]]];
+		$plan = ['id' => 123, 'etag' => 'version'];
+		$arguments = ['path' => 'file.txt'];
+		$id = WriteApprovals::present($module, $definition, $arguments, 'alice', $plan, $preview, $urls)['structuredContent']['confirmation']['id'];
+		self::assertTrue($execution->approve($id, 'alice'));
+		self::assertFalse($execution->authorize($id, 'files_delete', 'alice', $arguments + ['etag' => 'version']));
+		self::assertTrue($execution->authorize($id, 'files_delete', 'alice', $arguments + $plan));
+
 	}
 }
