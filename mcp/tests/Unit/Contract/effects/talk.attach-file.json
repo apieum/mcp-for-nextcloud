@@ -18,7 +18,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Attach file in Talk**\n\nThe file **Q3.pdf** (11 bytes) will be shared in **Projeto Alfa**.\n\nCaption, sent as a message right after the file:\n\n> Segue o relatório do trimestre.\n\nNothing was changed. Confirm to execute.\n\n*Show this plan to the user exactly as it will be sent to the conversation 'Projeto Alfa', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing.*"
+                                "text": "**Attach file in Talk**\n\nThe file **Q3.pdf** (11 bytes) will be shared in **Projeto Alfa**.\n\nCaption, sent as a message right after the file:\n\n> Segue o relatório do trimestre.\n\nNothing was changed. Confirm to execute.\n\n*The message will be sent as shown to the conversation 'Projeto Alfa'. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -38,7 +38,7 @@
                                     "size": 11
                                 }
                             },
-                            "message": "Show this plan to the user exactly as it will be sent to the conversation 'Projeto Alfa', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing."
+                            "message": "The message will be sent as shown to the conversation 'Projeto Alfa'. Follow the approval method returned with this plan."
                         }
                     }
                 }
@@ -93,7 +93,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Attach file in Talk**\n\nThe file **Q3.pdf** (11 bytes) will be shared in **Projeto Alfa**.\n\nCaption, sent as a message right after the file:\n\n> Segue o relatório do trimestre.\n\nNothing was changed. Confirm to execute.\n\n*Show this plan to the user exactly as it will be sent to the conversation 'Projeto Alfa', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing.*"
+                                "text": "**Attach file in Talk**\n\nThe file **Q3.pdf** (11 bytes) will be shared in **Projeto Alfa**.\n\nCaption, sent as a message right after the file:\n\n> Segue o relatório do trimestre.\n\nNothing was changed. Confirm to execute.\n\n*The message will be sent as shown to the conversation 'Projeto Alfa'. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -113,7 +113,7 @@
                                     "size": 11
                                 }
                             },
-                            "message": "Show this plan to the user exactly as it will be sent to the conversation 'Projeto Alfa', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing."
+                            "message": "The message will be sent as shown to the conversation 'Projeto Alfa'. Follow the approval method returned with this plan."
                         }
                     }
                 }
@@ -143,7 +143,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Attach file in Talk**\n\nThe file **Q3.pdf** (11 bytes) will be shared in **Projeto Alfa**.\n\nCaption, sent as a message right after the file:\n\n> Segue o relatório do trimestre.\n\nNothing was changed. Confirm to execute.\n\n*Show this plan to the user exactly as it will be sent to the conversation 'Projeto Alfa', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing.*"
+                                "text": "**Attach file in Talk**\n\nThe file **Q3.pdf** (11 bytes) will be shared in **Projeto Alfa**.\n\nCaption, sent as a message right after the file:\n\n> Segue o relatório do trimestre.\n\nNothing was changed. Confirm to execute.\n\n*The message will be sent as shown to the conversation 'Projeto Alfa'. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -163,7 +163,7 @@
                                     "size": 11
                                 }
                             },
-                            "message": "Show this plan to the user exactly as it will be sent to the conversation 'Projeto Alfa', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing."
+                            "message": "The message will be sent as shown to the conversation 'Projeto Alfa'. Follow the approval method returned with this plan."
                         }
                     }
                 }
