@@ -18,6 +18,8 @@ use OCA\Mcp\Mcp\Confirmation\ApprovalStore;
 use OCA\Mcp\Mcp\Confirmation\PlanState;
 use OCA\Mcp\Mcp\Confirmation\WriteApprovals;
 use OCA\Mcp\Mcp\Tools\ToolModule;
+use OCA\Mcp\Mcp\Tools\PreviewsWrites;
+use OCA\Mcp\Platform\FileAccess\CommonMessages;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Config\IUserConfig;
 use OCP\IURLGenerator;
@@ -39,6 +41,8 @@ final class ToolRegistryTest extends TestCase {
 	/** @var array<string, string> installed version per app id; an app left out answers '' (unknown) */
 	private array $appVersions = [];
 	public array $calls = [];
+	public string $previewTarget = 'First';
+	public bool $sharedWrite = false;
 	public ?\Throwable $throw = null;
 	private LoggerInterface $logger;
 
@@ -62,12 +66,12 @@ final class ToolRegistryTest extends TestCase {
 
 	private function registry(?WriteApprovals $approvals = null): ToolRegistry {
 		$test = $this;
-		$module = new class($test) implements ToolModule {
+		$module = new class($test) implements ToolModule, PreviewsWrites {
 			public function __construct(private ToolRegistryTest $test) {}
 			public function definitions(): array {
 				return [
 					['name' => 'a_read', 'description' => 'r', 'inputSchema' => ToolRegistryTest::schema(), 'module' => 'files', 'operation' => 'read'],
-					['name' => 'a_edit', 'description' => 'e', 'inputSchema' => ToolRegistryTest::schema(), 'module' => 'files', 'operation' => 'edit'],
+					['name' => 'a_edit', 'description' => 'e', 'inputSchema' => $this->editSchema(), 'module' => 'files', 'operation' => 'edit'],
 					['name' => 'n_read', 'description' => 'n', 'inputSchema' => ToolRegistryTest::schema(), 'module' => 'notes', 'operation' => 'read', 'app' => 'notes'],
 					['name' => 'c_read', 'description' => 'c', 'inputSchema' => ToolRegistryTest::schema(), 'module' => 'calendar', 'operation' => 'read', 'app' => 'calendar'],
 					['name' => 'd_read', 'description' => 'd', 'inputSchema' => ToolRegistryTest::schema(), 'module' => 'deck', 'operation' => 'read', 'app' => 'deck'],
@@ -75,6 +79,21 @@ final class ToolRegistryTest extends TestCase {
 					['name' => 's_share', 'description' => 's', 'inputSchema' => ToolRegistryTest::schema(), 'module' => 'files', 'operation' => 'share', 'grantAnyOf' => $this->test->shareAnyOf],
 				];
 			}
+			private function editSchema(): array {
+				$schema = ToolRegistryTest::schema();
+				$schema['properties']['confirm_shared'] = ['type' => 'boolean'];
+				return $schema;
+			}
+			public function preview(string $name, array $arguments, string $userId): array {
+				unset($arguments['confirm']);
+				return [
+					'action' => $name, 'arguments' => $arguments,
+					'message' => CommonMessages::planNothingChanged(),
+					'target' => $this->test->previewTarget,
+					'requiresSharedConfirmation' => $this->test->sharedWrite,
+				];
+			}
+
 			public function call(string $name, array $arguments, string $userId): array {
 				$this->test->calls[] = [$name, $arguments, $userId];
 				if ($this->test->throw !== null) {
@@ -152,6 +171,16 @@ final class ToolRegistryTest extends TestCase {
 		$plan = $first->call('a_edit', [], 'alice')['structuredContent'];
 		$active = false;
 		self::assertSame('browser', $second->call('a_edit', ['confirm' => true, 'approval_id' => $plan['confirmation']['id']], 'alice')['structuredContent']['confirmation']['mode']);
+
+		$active = true;
+		$this->sharedWrite = true;
+		$shared = $first->call('a_edit', [], 'alice')['structuredContent'];
+		$execute = ['confirm' => true, 'approval_id' => $shared['confirmation']['id']];
+		self::assertTrue($second->call('a_edit', $execute, 'alice')['structuredContent']['requiresConfirmation']);
+		$this->previewTarget = 'Changed';
+		self::assertTrue($second->call('a_edit', $execute + ['confirm_shared' => true], 'alice')['structuredContent']['requiresConfirmation']);
+		$this->previewTarget = 'First';
+		self::assertSame('ok', $second->call('a_edit', $execute + ['confirm_shared' => true], 'alice')['content'][0]['text']);
 
 		$this->policy->setGrant('alice', 'files', 'edit', false);
 		$this->expectException(\OCA\Mcp\Mcp\Tools\UnknownToolException::class);

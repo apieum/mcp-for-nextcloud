@@ -51,7 +51,11 @@ final class WriteApprovals {
 			}
 		}
 		$plan = WriteGate::plan($module, $definition, $preview, $uid);
-		if ($confirmed && $approvals?->authorize($arguments[self::ARGUMENT] ?? '', $definition['name'], $uid, $arguments, $plan)) {
+		$sharedPending = ($arguments['confirm_shared'] ?? false) !== true
+			&& isset($definition['inputSchema']['properties']['confirm_shared'])
+			&& (($plan['requiresSharedConfirmation'] ?? false) === true || !empty($plan['shared']));
+		if ($confirmed && !$sharedPending
+			&& $approvals?->authorize($arguments[self::ARGUMENT] ?? '', $definition['name'], $uid, $arguments, $plan)) {
 			return null;
 		}
 		return self::present($module, $definition, $arguments, $uid, $plan, $approvals, $urls);
