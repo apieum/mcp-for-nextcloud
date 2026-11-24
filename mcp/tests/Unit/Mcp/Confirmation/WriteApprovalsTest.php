@@ -87,8 +87,14 @@ final class WriteApprovalsTest extends TestCase {
 		$arguments = ['path' => 'file.txt'];
 		$id = WriteApprovals::present($module, $definition, $arguments, 'alice', $plan, $preview, $urls)['structuredContent']['confirmation']['id'];
 		self::assertTrue($execution->approve($id, 'alice'));
-		self::assertFalse($execution->authorize($id, 'files_delete', 'alice', $arguments + ['etag' => 'version']));
-		self::assertTrue($execution->authorize($id, 'files_delete', 'alice', $arguments + $plan));
+		self::assertFalse($execution->authorize($id, 'files_delete', 'alice', $arguments + ['etag' => 'version'], $plan));
+		self::assertTrue($execution->authorize($id, 'files_delete', 'alice', $arguments + $plan, $plan));
+
+		$sharedPlan = ['recipient' => 'Team', 'requiresSharedConfirmation' => true];
+		$id = $preview->stage('send', 'alice', $args, 'Send to Team', $sharedPlan);
+		self::assertTrue($execution->approve($id, 'alice'));
+		self::assertFalse($execution->authorize($id, 'send', 'alice', $args, ['recipient' => 'Another team']));
+		self::assertTrue($execution->authorize($id, 'send', 'alice', $args + ['confirm_shared' => true], $sharedPlan));
 
 	}
 }

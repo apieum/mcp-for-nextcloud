@@ -179,12 +179,11 @@ class ToolRegistry {
 					throw $e;
 				}
 				try {
-					if (WriteGate::isWrite($definition) && !$this->authorized($name, $arguments, $userId)) {
-						if ($this->approvals !== null) {
-							unset($arguments[WriteApprovals::ARGUMENT], $arguments[WriteGate::CONFIRM]);
+					if (WriteGate::isWrite($definition)) {
+						$refusal = WriteApprovals::guard($module, $published, $arguments, $userId, $this->approvals, $this->approvalUrls);
+						if ($refusal !== null) {
+							return $refusal;
 						}
-						$plan = WriteGate::plan($module, $definition, $arguments, $userId);
-						return WriteApprovals::present($module, $published, $arguments, $userId, $plan, $this->approvals, $this->approvalUrls);
 					}
 					unset($arguments[WriteApprovals::ARGUMENT]);
 					$result = $module->call($name, $arguments, $userId);
@@ -220,12 +219,6 @@ class ToolRegistry {
 			}
 		}
 		throw new UnknownToolException();
-	}
-
-	/** @param array<string, mixed> $arguments */
-	private function authorized(string $name, array $arguments, string $uid): bool {
-		return WriteGate::confirmed($arguments) && ($this->approvals === null
-			|| $this->approvals->authorize($arguments[WriteApprovals::ARGUMENT] ?? '', $name, $uid, $arguments));
 	}
 
 	/**

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OCA\Mcp\Mcp\Confirmation;
 
 use OCA\Mcp\L10n\Translator;
+use OCA\Mcp\Mcp\Tools\PreviewsWrites;
 use OCA\Mcp\Mcp\Tools\Results\ToolResult;
 use OCA\Mcp\Mcp\Tools\ToolModule;
 use OCA\Mcp\Platform\FileAccess\CommonMessages;
@@ -31,6 +32,32 @@ final class WriteApprovals {
 	) {}
 
 	/**
+	 * Runs the preview before trusting an approval. Native write handlers still recheck access and their own state.
+	 *
+	 * @param array<string, mixed> $definition published definition
+	 * @param array<string, mixed> $arguments validated request
+	 * @return array<string, mixed>|null response when execution is refused
+	 */
+	public static function guard(ToolModule $module, array $definition, array $arguments, string $uid, ?self $approvals, ?IURLGenerator $urls): ?array {
+		$confirmed = WriteGate::confirmed($arguments);
+		if ($confirmed && $approvals === null) {
+			return null;
+		}
+		$preview = $arguments;
+		if ($approvals !== null) {
+			unset($preview[self::ARGUMENT], $preview[WriteGate::CONFIRM], $preview['confirm_shared']);
+			if (!$module instanceof PreviewsWrites) {
+				unset($preview[PlanState::ARGUMENT], $preview['etag']);
+			}
+		}
+		$plan = WriteGate::plan($module, $definition, $preview, $uid);
+		if ($confirmed && $approvals?->authorize($arguments[self::ARGUMENT] ?? '', $definition['name'], $uid, $arguments, $plan)) {
+			return null;
+		}
+		return self::present($module, $definition, $arguments, $uid, $plan, $approvals, $urls);
+	}
+
+	/**
 	 * @param array<string, mixed> $definition published definition
 	 * @param array<string, mixed> $arguments validated request
 	 * @param array<string, mixed> $plan current preview
@@ -41,6 +68,7 @@ final class WriteApprovals {
 		if ($approvals === null || $urls === null) {
 			return ToolResult::structured(PlanRenderer::render($module, $name, $plan), $plan);
 		}
+		$current = $plan;
 		if (($plan['message'] ?? null) === CommonMessages::planNothingChanged()) {
 			unset($plan['message']);
 		}
@@ -53,7 +81,7 @@ final class WriteApprovals {
 		if ($name === 'files_delete' && is_int($plan['id'] ?? null)) {
 			$arguments['id'] = $plan['id'];
 		}
-		$id = $approvals->stage($name, $uid, $arguments, $text);
+		$id = $approvals->stage($name, $uid, $arguments, $text, $current);
 		$url = $urls->linkToRouteAbsolute('mcp.write_approval.show', ['id' => $id]);
 		$mandated = $approvals->underMandate($uid);
 		$plan['confirmation'] = ['id' => $id, 'mode' => $mandated ? 'mandate' : 'browser', 'url' => $url];
@@ -78,14 +106,17 @@ final class WriteApprovals {
 		return $definition;
 	}
 
-	/** @param array<string, mixed> $arguments validated arguments of the planned execution */
-	public function stage(string $tool, string $uid, array $arguments, string $rendered): string {
+	/**
+	 * @param array<string, mixed> $arguments validated arguments of the planned execution
+	 * @param array<string, mixed> $plan resolved effect shown to the account owner
+	 */
+	public function stage(string $tool, string $uid, array $arguments, string $rendered, array $plan = []): string {
 		$now = $this->clock->getTime();
 		$id = bin2hex(random_bytes(16));
 		$this->store->insert([
 			'id' => $id,
 			'uid' => $this->state->of('approval-owner', $uid, []),
-			'fingerprint' => $this->fingerprint($tool, $uid, $arguments),
+			'fingerprint' => $this->fingerprint($tool, $uid, $arguments, $plan),
 			'display' => $this->crypto->encrypt($rendered),
 			'expires' => $now + self::TTL,
 		], $now);
@@ -105,12 +136,15 @@ final class WriteApprovals {
 		return $this->mandate->active($uid);
 	}
 
-	/** @param array<string, mixed> $arguments validated arguments to be executed */
-	public function authorize(string $id, string $tool, string $uid, array $arguments): bool {
+	/**
+	 * @param array<string, mixed> $arguments validated arguments to be executed
+	 * @param array<string, mixed> $plan freshly resolved effect
+	 */
+	public function authorize(string $id, string $tool, string $uid, array $arguments, array $plan = []): bool {
 		$now = $this->clock->getTime();
 		$owner = $this->state->of('approval-owner', $uid, []);
 		$row = $this->store->find($id, $owner, $now);
-		if ($row === null || !hash_equals($row['fingerprint'], $this->fingerprint($tool, $uid, $arguments))) {
+		if ($row === null || !hash_equals($row['fingerprint'], $this->fingerprint($tool, $uid, $arguments, $plan))) {
 			return false;
 		}
 		$underMandate = (int)$row['approved'] !== 1 && $this->mandate->active($uid);
@@ -123,10 +157,14 @@ final class WriteApprovals {
 		return true;
 	}
 
-	/** @param array<string, mixed> $arguments validated arguments of the planned execution */
-	private function fingerprint(string $tool, string $uid, array $arguments): string {
-		unset($arguments[WriteGate::CONFIRM], $arguments[self::ARGUMENT]);
+	/**
+	 * @param array<string, mixed> $arguments validated arguments of the planned execution
+	 * @param array<string, mixed> $plan resolved effect, including any shared impact
+	 */
+	private function fingerprint(string $tool, string $uid, array $arguments, array $plan): string {
+		// Acknowledging shared impact does not change the planned effect. The native guard still requires the flag.
+		unset($arguments[WriteGate::CONFIRM], $arguments[self::ARGUMENT], $arguments['confirm_shared']);
 		ksort($arguments);
-		return $this->state->of($tool, $uid, ['approval' => $arguments]);
+		return $this->state->of($tool, $uid, ['approval' => $arguments, 'effect' => $plan]);
 	}
 }
