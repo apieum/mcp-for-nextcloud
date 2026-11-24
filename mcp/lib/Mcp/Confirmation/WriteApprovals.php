@@ -81,7 +81,7 @@ final class WriteApprovals {
 		$id = bin2hex(random_bytes(16));
 		$this->store->insert([
 			'id' => $id,
-			'uid' => $uid,
+			'uid' => $this->state->of('approval-owner', $uid, []),
 			'fingerprint' => $this->fingerprint($tool, $uid, $arguments),
 			'display' => $this->crypto->encrypt($rendered),
 			'expires' => $now + self::TTL,
@@ -90,12 +90,12 @@ final class WriteApprovals {
 	}
 
 	public function review(string $id, string $uid): ?string {
-		$row = $this->store->find($id, $uid, $this->clock->getTime());
+		$row = $this->store->find($id, $this->state->of('approval-owner', $uid, []), $this->clock->getTime());
 		return $row === null ? null : $this->crypto->decrypt($row['display']);
 	}
 
 	public function approve(string $id, string $uid): bool {
-		return $this->store->approve($id, $uid, $this->clock->getTime());
+		return $this->store->approve($id, $this->state->of('approval-owner', $uid, []), $this->clock->getTime());
 	}
 
 	public function underMandate(string $uid): bool {
@@ -105,12 +105,13 @@ final class WriteApprovals {
 	/** @param array<string, mixed> $arguments validated arguments to be executed */
 	public function authorize(string $id, string $tool, string $uid, array $arguments): bool {
 		$now = $this->clock->getTime();
-		$row = $this->store->find($id, $uid, $now);
+		$owner = $this->state->of('approval-owner', $uid, []);
+		$row = $this->store->find($id, $owner, $now);
 		if ($row === null || !hash_equals($row['fingerprint'], $this->fingerprint($tool, $uid, $arguments))) {
 			return false;
 		}
 		$underMandate = (int)$row['approved'] !== 1 && $this->mandate->active($uid);
-		if ((!$underMandate && (int)$row['approved'] !== 1) || !$this->store->consume($id, $uid, $now, $underMandate)) {
+		if ((!$underMandate && (int)$row['approved'] !== 1) || !$this->store->consume($id, $owner, $now, $underMandate)) {
 			return false;
 		}
 		$this->logger->notice('MCP write authorized for {uid}: {tool} ({source})', [

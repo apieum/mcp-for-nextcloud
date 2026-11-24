@@ -59,6 +59,8 @@ final class WriteApprovalsTest extends TestCase {
 		$args = ['value' => 'one'];
 		$id = $preview->stage('edit', 'alice', $args, 'Review one');
 		self::assertSame('encrypted:Review one', $row['display']);
+		self::assertSame((new PlanState($config))->of('approval-owner', 'alice', []), $row['uid']);
+		self::assertNull($execution->review($id, 'Alice'));
 		self::assertSame('Review one', $execution->review($id, 'alice'));
 		self::assertNull($execution->review($id, 'bob'));
 		self::assertFalse($execution->approve($id, 'bob'));
