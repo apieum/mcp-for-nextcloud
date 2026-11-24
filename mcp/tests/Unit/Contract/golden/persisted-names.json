@@ -30,7 +30,8 @@
             "OCA\\Mcp\\Migration\\Version001100Date20261015010000",
             "OCA\\Mcp\\Migration\\Version001100Date20261015020000",
             "OCA\\Mcp\\Migration\\Version001100Date20261016000000",
-            "OCA\\Mcp\\Migration\\Version001205Date20261106000000"
+            "OCA\\Mcp\\Migration\\Version001205Date20261106000000",
+            "OCA\\Mcp\\Migration\\Version001401Date20261124000000"
         ]
     },
     "di": {
