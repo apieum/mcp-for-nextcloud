@@ -160,14 +160,17 @@ final class ToolRegistryTest extends TestCase {
 		self::assertTrue($plan['requiresConfirmation']);
 		self::assertSame('mandate', $plan['confirmation']['mode']);
 		$execute = ['confirm' => true, 'approval_id' => $plan['confirmation']['id']];
-		self::assertSame('browser', $second->call('a_edit', $execute, 'bob')['structuredContent']['confirmation']['mode']);
+		self::assertTrue($second->call('a_edit', $execute, 'bob')['isError']);
 		self::assertTrue($second->call('a_edit', ['confirm' => true], 'alice')['structuredContent']['requiresConfirmation']);
 		self::assertTrue($second->call('a_edit', $execute + ['n' => 6], 'alice')['structuredContent']['requiresConfirmation']);
 		self::assertSame([], $this->calls);
 
 		self::assertSame('ok', $second->call('a_edit', $execute, 'alice')['content'][0]['text']);
 		self::assertSame([['a_edit', ['n' => 5, 'confirm' => true], 'alice']], $this->calls);
-		self::assertTrue($second->call('a_edit', $execute, 'alice')['structuredContent']['requiresConfirmation']);
+		$replayed = $second->call('a_edit', $execute, 'alice');
+		self::assertTrue($replayed['isError']);
+		self::assertArrayNotHasKey('structuredContent', $replayed);
+		self::assertCount(1, $this->calls);
 		$plan = $first->call('a_edit', [], 'alice')['structuredContent'];
 		$active = false;
 		self::assertSame('browser', $second->call('a_edit', ['confirm' => true, 'approval_id' => $plan['confirmation']['id']], 'alice')['structuredContent']['confirmation']['mode']);

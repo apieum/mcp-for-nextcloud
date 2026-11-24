@@ -43,6 +43,7 @@ final class WriteApprovals {
 		if ($confirmed && $approvals === null) {
 			return null;
 		}
+		$id = $arguments[self::ARGUMENT] ?? '';
 		$preview = $arguments;
 		if ($approvals !== null) {
 			unset($preview[self::ARGUMENT], $preview[WriteGate::CONFIRM], $preview['confirm_shared']);
@@ -55,8 +56,11 @@ final class WriteApprovals {
 			&& isset($definition['inputSchema']['properties']['confirm_shared'])
 			&& (($plan['requiresSharedConfirmation'] ?? false) === true || !empty($plan['shared']));
 		if ($confirmed && !$sharedPending
-			&& $approvals?->authorize($arguments[self::ARGUMENT] ?? '', $definition['name'], $uid, $arguments, $plan)) {
+			&& $approvals?->authorize($id, $definition['name'], $uid, $arguments, $plan)) {
 			return null;
+		}
+		if ($id !== '' && $approvals !== null && $approvals->find($id, $uid, $approvals->clock->getTime()) === null) {
+			return ToolResult::error(Translator::t('This approval ID is unavailable. Check the result before requesting a new plan.'));
 		}
 		return self::present($module, $definition, $arguments, $uid, $plan, $approvals, $urls);
 	}
@@ -159,6 +163,11 @@ final class WriteApprovals {
 			'app' => 'mcp', 'uid' => $uid, 'tool' => $tool, 'source' => $underMandate ? 'account mandate' : 'browser approval',
 		]);
 		return true;
+	}
+
+	/** @return array{fingerprint:string,display:string,approved:int|string}|null */
+	private function find(string $id, string $uid, int $now): ?array {
+		return $this->store->find($id, $this->state->of('approval-owner', $uid, []), $now);
 	}
 
 	/**
