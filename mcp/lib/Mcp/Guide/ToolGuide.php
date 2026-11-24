@@ -195,10 +195,8 @@ final class ToolGuide {
 	 */
 	private function body(array $definition): array {
 		$annotations = $definition['annotations'];
-		$readOnly = $annotations['readOnlyHint'] === true;
-		$lines = [];
-		$lines[] = ($readOnly ? 'Reads only.' : 'Writes: it changes something in this Nextcloud.')
-			. ' ' . $definition['description'];
+		$lines = [($annotations['readOnlyHint'] === true ? 'Reads only.' : 'Writes: it changes something in this Nextcloud.')
+			. ' ' . $definition['description']];
 		if ($annotations['destructiveHint'] === true) {
 			$lines[] = isset($definition['inputSchema']['properties'][\OCA\Mcp\Mcp\Confirmation\WriteApprovals::ARGUMENT])
 				? 'Flagged as destructive. Follow the confirmation method returned in the plan.'
