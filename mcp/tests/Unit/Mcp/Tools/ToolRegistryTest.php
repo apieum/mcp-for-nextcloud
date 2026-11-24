@@ -13,7 +13,15 @@ use OCA\Mcp\Access\Grants\GrantPolicy;
 use OCA\Mcp\Access\Grants\GrantCatalog;
 use OCA\Mcp\Tests\Unit\InMemoryConfig;
 use OCA\Mcp\Mcp\Tools\Results\ToolFailure;
+use OCA\Mcp\Mcp\Confirmation\AccountMandate;
+use OCA\Mcp\Mcp\Confirmation\ApprovalStore;
+use OCA\Mcp\Mcp\Confirmation\PlanState;
+use OCA\Mcp\Mcp\Confirmation\WriteApprovals;
 use OCA\Mcp\Mcp\Tools\ToolModule;
+use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\Config\IUserConfig;
+use OCP\IURLGenerator;
+use OCP\Security\ICrypto;
 use OCA\Mcp\Mcp\Tools\ToolRegistry;
 use OCA\Mcp\Mcp\Tools\Results\ToolResult;
 use OCP\App\IAppManager;
@@ -52,7 +60,7 @@ final class ToolRegistryTest extends TestCase {
 		return ['type' => 'object', 'properties' => ['n' => ['type' => 'integer', 'minimum' => 1, 'default' => 5]], 'additionalProperties' => false];
 	}
 
-	private function registry(): ToolRegistry {
+	private function registry(?WriteApprovals $approvals = null): ToolRegistry {
 		$test = $this;
 		$module = new class($test) implements ToolModule {
 			public function __construct(private ToolRegistryTest $test) {}
@@ -93,7 +101,61 @@ final class ToolRegistryTest extends TestCase {
 			$guests->method('allowsApp')->willReturnCallback(fn (string $uid, string $app): bool =>
 				$app === '' || !isset($this->guestApps[$uid]) || in_array($app, $this->guestApps[$uid], true));
 		}
-		return new ToolRegistry([$module], $this->policy, $apps, $users, $this->logger, $guests);
+		if ($approvals === null) {
+			return new ToolRegistry([$module], $this->policy, $apps, $users, $this->logger, $guests);
+		}
+		$urls = $this->createMock(IURLGenerator::class);
+		$urls->method('linkToRouteAbsolute')->willReturnCallback(static fn (string $route, array $params): string => 'https://cloud.test/approval/' . $params['id']);
+		return new ToolRegistry([$module], $this->policy, $apps, $users, $this->logger, $guests, approvals: $approvals, approvalUrls: $urls);
+	}
+
+	public function testMandateChecksPreviewAndRightsAgainOnAnotherRegistryInstance(): void {
+		$this->policy->setGrant('alice', 'files', 'edit', true);
+		$this->policy->setGrant('bob', 'files', 'edit', true);
+		$config = $this->createMock(IUserConfig::class);
+		$active = true;
+		$config->method('getValueBool')->willReturnCallback(static function (string $uid) use (&$active): bool {
+			return $uid === 'alice' && $active;
+		});
+		$clock = $this->createMock(ITimeFactory::class);
+		$clock->method('getTime')->willReturn(100);
+		$crypto = $this->createMock(ICrypto::class);
+		$crypto->method('encrypt')->willReturn('encrypted');
+		$store = $this->createMock(ApprovalStore::class);
+		$rows = [];
+		$store->method('insert')->willReturnCallback(static function (array $row) use (&$rows): void {
+			$rows[$row['uid']][$row['id']] = $row + ['approved' => 0];
+		});
+		$store->method('find')->willReturnCallback(static function (string $id, string $uid) use (&$rows): ?array {
+			return $rows[$uid][$id] ?? null;
+		});
+		$store->method('consume')->willReturnCallback(static function (string $id, string $uid) use (&$rows): bool {
+			unset($rows[$uid][$id]);
+			return true;
+		});
+		$approvals = new WriteApprovals($store, new AccountMandate($config, $this->logger), new PlanState($this->config), $clock, $crypto, $this->logger);
+		$first = $this->registry($approvals);
+		$second = $this->registry($approvals);
+
+		$plan = $first->call('a_edit', [], 'alice')['structuredContent'];
+		self::assertTrue($plan['requiresConfirmation']);
+		self::assertSame('mandate', $plan['confirmation']['mode']);
+		$execute = ['confirm' => true, 'approval_id' => $plan['confirmation']['id']];
+		self::assertSame('browser', $second->call('a_edit', $execute, 'bob')['structuredContent']['confirmation']['mode']);
+		self::assertTrue($second->call('a_edit', ['confirm' => true], 'alice')['structuredContent']['requiresConfirmation']);
+		self::assertTrue($second->call('a_edit', $execute + ['n' => 6], 'alice')['structuredContent']['requiresConfirmation']);
+		self::assertSame([], $this->calls);
+
+		self::assertSame('ok', $second->call('a_edit', $execute, 'alice')['content'][0]['text']);
+		self::assertSame([['a_edit', ['n' => 5, 'confirm' => true], 'alice']], $this->calls);
+		self::assertTrue($second->call('a_edit', $execute, 'alice')['structuredContent']['requiresConfirmation']);
+		$plan = $first->call('a_edit', [], 'alice')['structuredContent'];
+		$active = false;
+		self::assertSame('browser', $second->call('a_edit', ['confirm' => true, 'approval_id' => $plan['confirmation']['id']], 'alice')['structuredContent']['confirmation']['mode']);
+
+		$this->policy->setGrant('alice', 'files', 'edit', false);
+		$this->expectException(\OCA\Mcp\Mcp\Tools\UnknownToolException::class);
+		$second->call('a_edit', ['confirm' => true, 'approval_id' => $plan['confirmation']['id']], 'alice');
 	}
 
 	/** Every registered write gets the same readable envelope, regardless of module preview support. */

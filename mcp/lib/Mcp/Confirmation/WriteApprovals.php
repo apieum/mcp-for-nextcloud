@@ -48,6 +48,10 @@ final class WriteApprovals {
 		return $this->store->approve($id, $uid, $this->clock->getTime());
 	}
 
+	public function underMandate(string $uid): bool {
+		return $this->mandate->active($uid);
+	}
+
 	/** @param array<string, mixed> $arguments validated arguments to be executed */
 	public function authorize(string $id, string $tool, string $uid, array $arguments): bool {
 		$now = $this->clock->getTime();
