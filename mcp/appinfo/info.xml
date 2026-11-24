@@ -378,7 +378,7 @@ Claude (claude.ai und Claude Desktop), ChatGPT und Gemini CLI melden sich mit OA
 
 Nextcloud 32–35, PHP 8.2+; 1.4.0 wird auf Nextcloud 34 und 35 unterstützt und getestet, nichts Neues zielt auf 32 oder 33. Mail 5.0.0+ (Anhangtext 5.10.11+), Tables 1.0.0+, Forms 5.3.0+ und Polls 8.6.3+; Notes, Mail, Tables, Forms, Polls, Deck und Talk sind optional: ihre Werkzeuge erscheinen nur, wenn die App in einer unterstützten Version aktiviert ist. Der Administrator verwaltet Berechtigungen, Ausschluss-Tags und Ressourcenbereiche. Bestehende Dateikopien und Versions-Voraussetzungen bleiben gültig; Kontaktlöschung braucht eine geprüfte Sicherung.
     ]]></description>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <licence>AGPL-3.0-or-later</licence>
     <author mail="jhonatan@sintax.tech">Jhonatan Jaworski</author>
     <namespace>Mcp</namespace>

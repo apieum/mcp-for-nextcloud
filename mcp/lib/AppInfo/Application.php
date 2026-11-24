@@ -9,6 +9,7 @@ namespace OCA\Mcp\AppInfo;
 
 use OCA\Mcp\Access\Grants\GrantPolicy;
 use OCA\Mcp\Mcp\Protocol\McpProtocol;
+use OCA\Mcp\Mcp\Confirmation\WriteApprovals;
 use OCA\Mcp\Mcp\Prompts\PromptCatalog;
 use OCA\Mcp\Access\Guests\GuestRestrictions;
 use OCA\Mcp\Mcp\Resources\ResourceRegistry;
@@ -31,6 +32,7 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\Files\IRootFolder;
 use OCP\IUserManager;
 use OCP\IUserSession;
+use OCP\IURLGenerator;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -102,6 +104,8 @@ class Application extends App implements IBootstrap {
 			$c->get(LoggerInterface::class),
 			$c->get(GuestRestrictions::class),
 			$c->get(CapabilityRegistry::class),
+			$c->get(WriteApprovals::class),
+			$c->get(IURLGenerator::class),
 		));
 		$context->registerService(ResourceRegistry::class, static fn (ContainerInterface $c): ResourceRegistry => new ResourceRegistry(
 			$c->get(ToolRegistry::class),

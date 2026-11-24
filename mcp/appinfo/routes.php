@@ -16,6 +16,8 @@ return ['routes' => [
 	['name' => 'checkout#uploadPost', 'url' => '/checkout/{token}', 'verb' => 'POST'],
 	['name' => 'settings#personal', 'url' => '/settings/personal', 'verb' => 'POST'],
 	['name' => 'mandate#update', 'url' => '/settings/mandate', 'verb' => 'POST'],
+	['name' => 'write_approval#show', 'url' => '/approval/{id}', 'verb' => 'GET', 'requirements' => ['id' => '[a-f0-9]{32}']],
+	['name' => 'write_approval#approve', 'url' => '/approval/{id}', 'verb' => 'POST', 'requirements' => ['id' => '[a-f0-9]{32}']],
 	['name' => 'grants#index', 'url' => '/api/grants', 'verb' => 'GET'],
 	// POST keeps "bulk" from colliding with a user whose uid is "bulk" on PUT /api/grants/{uid}.
 	['name' => 'grants#bulk', 'url' => '/api/grants/bulk', 'verb' => 'POST'],
