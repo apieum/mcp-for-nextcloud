@@ -200,7 +200,9 @@ final class ToolGuide {
 		$lines[] = ($readOnly ? 'Reads only.' : 'Writes: it changes something in this Nextcloud.')
 			. ' ' . $definition['description'];
 		if ($annotations['destructiveHint'] === true) {
-			$lines[] = 'Flagged as destructive: the client is expected to ask the user before it runs.';
+			$lines[] = isset($definition['inputSchema']['properties'][\OCA\Mcp\Mcp\Confirmation\WriteApprovals::ARGUMENT])
+				? 'Flagged as destructive. Follow the confirmation method returned in the plan.'
+				: 'Flagged as destructive: the client is expected to ask the user before it runs.';
 		}
 		$parameters = $this->parameters($definition['inputSchema']);
 		if ($parameters !== []) {

@@ -10,6 +10,7 @@ namespace OCA\Mcp\Mcp\Confirmation;
 use OCA\Mcp\L10n\Translator;
 use OCA\Mcp\Mcp\Tools\Results\ToolResult;
 use OCA\Mcp\Mcp\Tools\ToolModule;
+use OCA\Mcp\Platform\FileAccess\CommonMessages;
 use OCP\IURLGenerator;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Security\ICrypto;
@@ -37,10 +38,13 @@ final class WriteApprovals {
 	 */
 	public static function present(ToolModule $module, array $definition, array $arguments, string $uid, array $plan, ?self $approvals, ?IURLGenerator $urls): array {
 		$name = $definition['name'];
-		$text = PlanRenderer::render($module, $name, $plan);
 		if ($approvals === null || $urls === null) {
-			return ToolResult::structured($text, $plan);
+			return ToolResult::structured(PlanRenderer::render($module, $name, $plan), $plan);
 		}
+		if (($plan['message'] ?? null) === CommonMessages::planNothingChanged()) {
+			unset($plan['message']);
+		}
+		$text = PlanRenderer::render($module, $name, $plan);
 		foreach ([PlanState::ARGUMENT, 'etag'] as $field) {
 			if (isset($definition['inputSchema']['properties'][$field]) && is_string($plan[$field] ?? null)) {
 				$arguments[$field] = $plan[$field];
@@ -59,6 +63,8 @@ final class WriteApprovals {
 	/** @param array<string, mixed> $definition @return array<string, mixed> */
 	public static function publish(array $definition, bool $enabled): array {
 		if ($enabled && WriteGate::isWrite($definition)) {
+			$definition['inputSchema']['properties'][WriteGate::CONFIRM]['description'] =
+				'Leave unset to preview. Send true with the approval ID once Nextcloud has authorized the plan.';
 			$definition['inputSchema']['properties'][WriteApprovals::ARGUMENT] = [
 				'type' => 'string',
 				'minLength' => 32,
