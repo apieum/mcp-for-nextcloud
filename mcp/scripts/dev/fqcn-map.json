@@ -2,6 +2,14 @@
 	"base": "46006682",
 	"psr4": {"OCA\\Mcp\\": "lib/"},
 	"entries": [
+		{"path":"lib/Controller/MandateController.php","fqcn":"OCA\\Mcp\\Controller\\MandateController","target":"stays","owner":"Controller","ticket":null},
+		{"path":"lib/Controller/WriteApprovalController.php","fqcn":"OCA\\Mcp\\Controller\\WriteApprovalController","target":"stays","owner":"Controller","ticket":null},
+		{"path":"lib/Mcp/Confirmation/AccountMandate.php","fqcn":"OCA\\Mcp\\Mcp\\Confirmation\\AccountMandate","target":"stays","owner":"Mcp","ticket":null},
+		{"path":"lib/Mcp/Confirmation/ApprovalStore.php","fqcn":"OCA\\Mcp\\Mcp\\Confirmation\\ApprovalStore","target":"stays","owner":"Mcp","ticket":null},
+		{"path":"lib/Mcp/Confirmation/BrowserConfirmation.php","fqcn":"OCA\\Mcp\\Mcp\\Confirmation\\BrowserConfirmation","target":"stays","owner":"Mcp","ticket":null},
+		{"path":"lib/Mcp/Confirmation/WriteApprovals.php","fqcn":"OCA\\Mcp\\Mcp\\Confirmation\\WriteApprovals","target":"stays","owner":"Mcp","ticket":null},
+		{"path":"lib/Migration/Version001401Date20261124000000.php","fqcn":"OCA\\Mcp\\Migration\\Version001401Date20261124000000","target":"stays","owner":"Migration","ticket":null},
+
 		{"path":"lib/Modules/Deck/Labels/LabelGrantGate.php","fqcn":"OCA\\Mcp\\Modules\\Deck\\Labels\\LabelGrantGate","target":"stays","owner":"Modules\\Deck","ticket":null},
 		{"path":"lib/Modules/Deck/Tools/UpdateLabel.php","fqcn":"OCA\\Mcp\\Modules\\Deck\\Tools\\UpdateLabel","target":"stays","owner":"Modules\\Deck","ticket":null},
 		{"path":"lib/Modules/Deck/Tools/CreateLabel.php","fqcn":"OCA\\Mcp\\Modules\\Deck\\Tools\\CreateLabel","target":"stays","owner":"Modules\\Deck","ticket":null},

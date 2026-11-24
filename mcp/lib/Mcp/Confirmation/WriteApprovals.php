@@ -7,6 +7,10 @@ declare(strict_types=1);
 
 namespace OCA\Mcp\Mcp\Confirmation;
 
+use OCA\Mcp\L10n\Translator;
+use OCA\Mcp\Mcp\Tools\Results\ToolResult;
+use OCA\Mcp\Mcp\Tools\ToolModule;
+use OCP\IURLGenerator;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Security\ICrypto;
 use Psr\Log\LoggerInterface;
@@ -24,6 +28,46 @@ final class WriteApprovals {
 		private ICrypto $crypto,
 		private LoggerInterface $logger,
 	) {}
+
+	/**
+	 * @param array<string, mixed> $definition published definition
+	 * @param array<string, mixed> $arguments validated request
+	 * @param array<string, mixed> $plan current preview
+	 * @return array<string, mixed>
+	 */
+	public static function present(ToolModule $module, array $definition, array $arguments, string $uid, array $plan, ?self $approvals, ?IURLGenerator $urls): array {
+		$name = $definition['name'];
+		$text = PlanRenderer::render($module, $name, $plan);
+		if ($approvals === null || $urls === null) {
+			return ToolResult::structured($text, $plan);
+		}
+		foreach ([PlanState::ARGUMENT, 'etag'] as $field) {
+			if (isset($definition['inputSchema']['properties'][$field]) && is_string($plan[$field] ?? null)) {
+				$arguments[$field] = $plan[$field];
+			}
+		}
+		$id = $approvals->stage($name, $uid, $arguments, $text);
+		$url = $urls->linkToRouteAbsolute('mcp.write_approval.show', ['id' => $id]);
+		$mandated = $approvals->underMandate($uid);
+		$plan['confirmation'] = ['id' => $id, 'mode' => $mandated ? 'mandate' : 'browser', 'url' => $url];
+		$text .= "\n\n" . ($mandated
+			? Translator::t('The account mandate authorizes this preview. Repeat the call with confirm: true and approval_id %s.', [$id])
+			: Translator::t('Review and approve this plan in Nextcloud at %s. Then repeat the call with confirm: true and approval_id %s.', [$url, $id]));
+		return ToolResult::structured($text, $plan);
+	}
+
+	/** @param array<string, mixed> $definition @return array<string, mixed> */
+	public static function publish(array $definition, bool $enabled): array {
+		if ($enabled && WriteGate::isWrite($definition)) {
+			$definition['inputSchema']['properties'][WriteApprovals::ARGUMENT] = [
+				'type' => 'string',
+				'minLength' => 32,
+				'maxLength' => 32,
+				'description' => 'Return the approval ID from the preview with confirm: true. Use the browser approval URL when the preview calls for it.',
+			];
+		}
+		return $definition;
+	}
 
 	/** @param array<string, mixed> $arguments validated arguments of the planned execution */
 	public function stage(string $tool, string $uid, array $arguments, string $rendered): string {

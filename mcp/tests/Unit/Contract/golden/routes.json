@@ -43,6 +43,30 @@
             "resolves": "SettingsController::personal"
         },
         {
+            "name": "mandate#update",
+            "url": "/settings/mandate",
+            "verb": "POST",
+            "resolves": "MandateController::update"
+        },
+        {
+            "name": "write_approval#show",
+            "url": "/approval/{id}",
+            "verb": "GET",
+            "requirements": {
+                "id": "[a-f0-9]{32}"
+            },
+            "resolves": "WriteApprovalController::show"
+        },
+        {
+            "name": "write_approval#approve",
+            "url": "/approval/{id}",
+            "verb": "POST",
+            "requirements": {
+                "id": "[a-f0-9]{32}"
+            },
+            "resolves": "WriteApprovalController::approve"
+        },
+        {
             "name": "grants#index",
             "url": "/api/grants",
             "verb": "GET",

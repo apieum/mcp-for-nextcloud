@@ -21,10 +21,8 @@ use OCP\IURLGenerator;
 use OCP\Lock\LockedException;
 use Psr\Log\LoggerInterface;
 use OCA\Mcp\Mcp\Confirmation\PlanChanged;
-use OCA\Mcp\Mcp\Confirmation\PlanRenderer;
 use OCA\Mcp\Mcp\Confirmation\WriteGate;
 use OCA\Mcp\Mcp\Confirmation\WriteApprovals;
-use OCA\Mcp\Mcp\Confirmation\PlanState;
 use OCA\Mcp\Mcp\Guide\ToolGuide;
 use OCA\Mcp\Mcp\Tools\Discovery\CapabilityRegistry;
 use OCA\Mcp\Mcp\Tools\Discovery\ToolAccess;
@@ -173,7 +171,7 @@ class ToolRegistry {
 					$audit(RestrictedModule::DENIED);
 					break 2;
 				}
-				$published = $this->publish($definition);
+				$published = WriteApprovals::publish(WriteGate::publish($definition), $this->approvals !== null);
 				try {
 					$arguments = ArgumentValidator::validate($published['inputSchema'], $arguments);
 				} catch (InvalidArgumentException $e) {
@@ -186,7 +184,7 @@ class ToolRegistry {
 							unset($arguments[WriteApprovals::ARGUMENT], $arguments[WriteGate::CONFIRM]);
 						}
 						$plan = WriteGate::plan($module, $definition, $arguments, $userId);
-						return $this->presentPlan($module, $published, $arguments, $userId, $plan);
+						return WriteApprovals::present($module, $published, $arguments, $userId, $plan, $this->approvals, $this->approvalUrls);
 					}
 					unset($arguments[WriteApprovals::ARGUMENT]);
 					$result = $module->call($name, $arguments, $userId);
@@ -196,7 +194,7 @@ class ToolRegistry {
 				} catch (PlanChanged $e) {
 					// Nothing was written: the person approved another state, so the answer is the new plan to approve.
 					$plan = WriteGate::envelope($definition, $e->plan);
-					return $this->presentPlan($module, $published, $arguments, $userId, $plan);
+					return WriteApprovals::present($module, $published, $arguments, $userId, $plan, $this->approvals, $this->approvalUrls);
 				} catch (ToolFailure $e) {
 					$audit(RestrictedModule::READ_ERROR);
 					return ToolResult::error($e->getMessage());
@@ -228,46 +226,6 @@ class ToolRegistry {
 	private function authorized(string $name, array $arguments, string $uid): bool {
 		return WriteGate::confirmed($arguments) && ($this->approvals === null
 			|| $this->approvals->authorize($arguments[WriteApprovals::ARGUMENT] ?? '', $name, $uid, $arguments));
-	}
-
-	/**
-	 * @param array<string, mixed> $definition published definition
-	 * @param array<string, mixed> $arguments validated request
-	 * @param array<string, mixed> $plan current preview
-	 * @return array<string, mixed>
-	 */
-	private function presentPlan(ToolModule $module, array $definition, array $arguments, string $uid, array $plan): array {
-		$name = $definition['name'];
-		$text = PlanRenderer::render($module, $name, $plan);
-		if ($this->approvals !== null && $this->approvalUrls !== null) {
-			foreach ([PlanState::ARGUMENT, 'etag'] as $field) {
-				if (isset($definition['inputSchema']['properties'][$field]) && is_string($plan[$field] ?? null)) {
-					$arguments[$field] = $plan[$field];
-				}
-			}
-			$id = $this->approvals->stage($name, $uid, $arguments, $text);
-			$url = $this->approvalUrls->linkToRouteAbsolute('mcp.write_approval.show', ['id' => $id]);
-			$mandated = $this->approvals->underMandate($uid);
-			$plan['confirmation'] = ['id' => $id, 'mode' => $mandated ? 'mandate' : 'browser', 'url' => $url];
-			$text .= "\n\n" . ($mandated
-				? Translator::t('The account mandate authorizes this preview. Repeat the call with confirm: true and approval_id %s.', [$id])
-				: Translator::t('Review and approve this plan in Nextcloud at %s. Then repeat the call with confirm: true and approval_id %s.', [$url, $id]));
-		}
-		return ToolResult::structured($text, $plan);
-	}
-
-	/** @param array<string, mixed> $definition @return array<string, mixed> */
-	private function publish(array $definition): array {
-		$definition = WriteGate::publish($definition);
-		if ($this->approvals !== null && WriteGate::isWrite($definition)) {
-			$definition['inputSchema']['properties'][WriteApprovals::ARGUMENT] = [
-				'type' => 'string',
-				'minLength' => 32,
-				'maxLength' => 32,
-				'description' => 'Return the approval ID from the preview with confirm: true. Use the browser approval URL when the preview calls for it.',
-			];
-		}
-		return $definition;
 	}
 
 	/**
@@ -306,7 +264,7 @@ class ToolRegistry {
 	 * @return array{name:string, title:string, description:string, inputSchema:array<string, mixed>, annotations:array<string, bool|string>, module:string, operation:string, app?:string, apps?:list<string>, grantAnyOf?:list<string>}
 	 */
 	private function present(array $definition): array {
-		$definition = $this->publish($definition);
+		$definition = WriteApprovals::publish(WriteGate::publish($definition), $this->approvals !== null);
 		return [
 			'name' => $definition['name'],
 			'title' => ToolPresentation::title($definition['name']),
