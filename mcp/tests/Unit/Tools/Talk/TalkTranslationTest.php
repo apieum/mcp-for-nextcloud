@@ -75,24 +75,15 @@ final class TalkTranslationTest extends TestCase {
 			self::assertSame($text, [self::messageClass($method), $method](), $method);
 		}
 		self::assertSame(
-			'Vou criar no Talk o grupo \'Projeto X\' com você como dono e como convidados Bob Souza, Carol Lima.'
-			. ' Mostre este plano ao usuário e só repita a mesma chamada com confirm: true depois que ele disser'
-			. ' sim de forma explícita; se ele pedir mudanças, ajuste o plano e chame a tool de novo.'
-			. ' Sem essa confirmação o servidor não cria nada.',
+			'Vou criar no Talk o grupo \'Projeto X\' com você como dono e como convidados Bob Souza, Carol Lima. Siga o método de aprovação indicado neste plano.',
 			\OCA\Mcp\Modules\Talk\Presentation\TalkPlanMessages::confirmationInstructionGroup('Projeto X', \OCA\Mcp\Modules\Talk\Presentation\TalkPlanMessages::invitedGuests(['Bob Souza', 'Carol Lima'])),
 		);
 		self::assertSame(
-			'Mostre este plano ao usuário exatamente como será enviado para a conversa \'Comercial\', pergunte se ele'
-			. ' realmente quer isso e só repita a mesma chamada com confirm: true depois que ele disser sim de forma'
-			. ' explícita. Se ele pedir mudanças, ajuste o texto, chame a tool de novo e mostre o novo plano. Sem essa'
-			. ' confirmação o servidor não publica nada.',
+			'A mensagem será enviada como exibida para a conversa \'Comercial\'. Siga o método de aprovação indicado neste plano.',
 			\OCA\Mcp\Modules\Talk\Presentation\TalkPlanMessages::confirmationInstruction('Comercial'),
 		);
 		self::assertSame(
-			'Mostre este plano ao usuário exatamente como será enviado em uma conversa direta com \'Bob Souza\','
-			. ' pergunte se ele realmente quer isso e só repita a mesma chamada com confirm: true depois que ele disser'
-			. ' sim de forma explícita. Se ele pedir mudanças, ajuste o texto, chame a tool de novo e mostre o novo'
-			. ' plano. Sem essa confirmação o servidor não publica nada e a conversa direta não é criada.',
+			'A mensagem será enviada como exibida em uma conversa direta com \'Bob Souza\'. Siga o método de aprovação indicado neste plano.',
 			\OCA\Mcp\Modules\Talk\Presentation\TalkPlanMessages::confirmationInstructionTarget('Bob Souza'),
 		);
 		self::assertSame(
@@ -152,6 +143,7 @@ final class TalkTranslationTest extends TestCase {
 			self::assertDoesNotMatchRegularExpression('/[À-ÿ]/u', $text);
 		}
 		self::assertSame(\OCA\Mcp\Modules\Talk\Presentation\TalkDescriptions::TOOL_REPLY, $definitions[2]['description']);
+		self::assertStringContainsString('follow the approval method', $definitions[2]['description']);
 	}
 
 	/** Resolves the same translation assertion across the extracted presentation classes. */

@@ -24,7 +24,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Send batch in Talk**\n\n2 messages to **Project**:\n\n1. > First\n\n2. > Second\n\nNothing was changed. Confirm to execute.\n\n*Show this plan to the user exactly as it will be sent to the conversation 'Project', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing.*"
+                                "text": "**Send batch in Talk**\n\n2 messages to **Project**:\n\n1. > First\n\n2. > Second\n\nNothing was changed. Confirm to execute.\n\n*The message will be sent as shown to the conversation 'Project'. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -46,7 +46,7 @@
                                     }
                                 ]
                             },
-                            "message": "Show this plan to the user exactly as it will be sent to the conversation 'Project', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing."
+                            "message": "The message will be sent as shown to the conversation 'Project'. Follow the approval method returned with this plan."
                         }
                     }
                 }
@@ -123,7 +123,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Send batch in Talk**\n\n2 messages to **Project**:\n\n1. > First\n\n2. > Second\n\nNothing was changed. Confirm to execute.\n\n*Show this plan to the user exactly as it will be sent to the conversation 'Project', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing.*"
+                                "text": "**Send batch in Talk**\n\n2 messages to **Project**:\n\n1. > First\n\n2. > Second\n\nNothing was changed. Confirm to execute.\n\n*The message will be sent as shown to the conversation 'Project'. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -145,7 +145,7 @@
                                     }
                                 ]
                             },
-                            "message": "Show this plan to the user exactly as it will be sent to the conversation 'Project', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing."
+                            "message": "The message will be sent as shown to the conversation 'Project'. Follow the approval method returned with this plan."
                         }
                     }
                 }
@@ -186,7 +186,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Send batch in Talk**\n\n2 messages to **Project**:\n\n1. > First\n\n2. > Second\n\nNothing was changed. Confirm to execute.\n\n*Show this plan to the user exactly as it will be sent to the conversation 'Project', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing.*"
+                                "text": "**Send batch in Talk**\n\n2 messages to **Project**:\n\n1. > First\n\n2. > Second\n\nNothing was changed. Confirm to execute.\n\n*The message will be sent as shown to the conversation 'Project'. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -208,7 +208,7 @@
                                     }
                                 ]
                             },
-                            "message": "Show this plan to the user exactly as it will be sent to the conversation 'Project', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing."
+                            "message": "The message will be sent as shown to the conversation 'Project'. Follow the approval method returned with this plan."
                         }
                     }
                 }

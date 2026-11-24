@@ -102,7 +102,7 @@ class WritePreviewTest extends TestCase {
 		// The instruction repeats what is about to happen: the user approves a name and a guest list.
 		$this->assertStringContainsString('Projeto X', $draft['message']);
 		$this->assertStringContainsString('Bob Souza, Carol Lima', $draft['message']);
-		$this->assertStringContainsString('confirm: true', $draft['message']);
+		$this->assertStringContainsString('Follow the approval method', $draft['message']);
 	}
 
 	public function testAGroupDraftWithoutGuestsDoesNotPromiseAnyInvitation(): void {
@@ -176,7 +176,7 @@ class WritePreviewTest extends TestCase {
 		$draft = $this->previews->directMessage(new DirectContact('bob', 'Bob Souza'), 'alice', 'oi');
 
 		$this->assertSame(\OCA\Mcp\Modules\Talk\Presentation\TalkPlanMessages::confirmationInstructionTarget('Bob Souza'), $draft['message']);
-		$this->assertStringContainsString('confirm: true', $draft['message']);
+		$this->assertStringContainsString('Follow the approval method', $draft['message']);
 	}
 
 	public function testTheDraftTellsTheAgentToShowItAndToWaitForTheApproval(): void {
@@ -187,7 +187,7 @@ class WritePreviewTest extends TestCase {
 			$draft['message'],
 		);
 		$this->assertStringContainsString("'Comercial'", $draft['message']);
-		$this->assertStringContainsString('confirm: true', $draft['message']);
+		$this->assertStringContainsString('Follow the approval method', $draft['message']);
 	}
 
 	public function testAQuotedReplyShowsWhoIsBeingAnsweredAndWhat(): void {
@@ -401,7 +401,7 @@ class WritePreviewTest extends TestCase {
 			$this->assertArrayNotHasKey('approvalId', $plan);
 			$this->assertArrayNotHasKey('approval_id', $plan);
 			$this->assertTrue($plan['requiresConfirmation']);
-			$this->assertStringContainsString('confirm: true', $plan['message']);
+			$this->assertStringContainsString('Follow the approval method', $plan['message']);
 		}
 	}
 

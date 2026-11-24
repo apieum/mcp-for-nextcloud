@@ -19,7 +19,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Create group in Talk**\n\nThe Talk group **Team** will be created with you as the owner.\n\nThese people will be invited:\n- **pedro**\n\nNothing was changed. Confirm to execute.\n\n*I will create the Talk group 'Team' with you as the owner and as guests pedro. Show this plan to the user and only repeat the same call with confirm: true after they explicitly say yes; if they ask for changes, edit the plan and call the tool again. Without that confirmation the server creates nothing.*"
+                                "text": "**Create group in Talk**\n\nThe Talk group **Team** will be created with you as the owner.\n\nThese people will be invited:\n- **pedro**\n\nNothing was changed. Confirm to execute.\n\n*I will create the Talk group 'Team' with you as the owner and as guests pedro. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -36,7 +36,7 @@
                                     }
                                 ]
                             },
-                            "message": "I will create the Talk group 'Team' with you as the owner and as guests pedro. Show this plan to the user and only repeat the same call with confirm: true after they explicitly say yes; if they ask for changes, edit the plan and call the tool again. Without that confirmation the server creates nothing."
+                            "message": "I will create the Talk group 'Team' with you as the owner and as guests pedro. Follow the approval method returned with this plan."
                         }
                     }
                 }
@@ -103,7 +103,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Create group in Talk**\n\nThe Talk group **Team** will be created with you as the owner.\n\nThese people will be invited:\n- **pedro**\n\nNothing was changed. Confirm to execute.\n\n*I will create the Talk group 'Team' with you as the owner and as guests pedro. Show this plan to the user and only repeat the same call with confirm: true after they explicitly say yes; if they ask for changes, edit the plan and call the tool again. Without that confirmation the server creates nothing.*"
+                                "text": "**Create group in Talk**\n\nThe Talk group **Team** will be created with you as the owner.\n\nThese people will be invited:\n- **pedro**\n\nNothing was changed. Confirm to execute.\n\n*I will create the Talk group 'Team' with you as the owner and as guests pedro. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -120,7 +120,7 @@
                                     }
                                 ]
                             },
-                            "message": "I will create the Talk group 'Team' with you as the owner and as guests pedro. Show this plan to the user and only repeat the same call with confirm: true after they explicitly say yes; if they ask for changes, edit the plan and call the tool again. Without that confirmation the server creates nothing."
+                            "message": "I will create the Talk group 'Team' with you as the owner and as guests pedro. Follow the approval method returned with this plan."
                         }
                     }
                 }
@@ -156,7 +156,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Create group in Talk**\n\nThe Talk group **Team** will be created with you as the owner.\n\nThese people will be invited:\n- **pedro**\n\nNothing was changed. Confirm to execute.\n\n*I will create the Talk group 'Team' with you as the owner and as guests pedro. Show this plan to the user and only repeat the same call with confirm: true after they explicitly say yes; if they ask for changes, edit the plan and call the tool again. Without that confirmation the server creates nothing.*"
+                                "text": "**Create group in Talk**\n\nThe Talk group **Team** will be created with you as the owner.\n\nThese people will be invited:\n- **pedro**\n\nNothing was changed. Confirm to execute.\n\n*I will create the Talk group 'Team' with you as the owner and as guests pedro. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -173,7 +173,7 @@
                                     }
                                 ]
                             },
-                            "message": "I will create the Talk group 'Team' with you as the owner and as guests pedro. Show this plan to the user and only repeat the same call with confirm: true after they explicitly say yes; if they ask for changes, edit the plan and call the tool again. Without that confirmation the server creates nothing."
+                            "message": "I will create the Talk group 'Team' with you as the owner and as guests pedro. Follow the approval method returned with this plan."
                         }
                     }
                 }

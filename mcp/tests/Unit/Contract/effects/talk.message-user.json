@@ -17,7 +17,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Direct message in Talk**\n\nDirect message to **pedro**:\n\n> Hello\n\nThe direct conversation with **pedro** will be created if it does not exist yet.\n\nNothing was changed. Confirm to execute.\n\n*Show this plan to the user exactly as it will be sent in a direct conversation with 'pedro', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing and the direct conversation is not created.*"
+                                "text": "**Direct message in Talk**\n\nDirect message to **pedro**:\n\n> Hello\n\nThe direct conversation with **pedro** will be created if it does not exist yet.\n\nNothing was changed. Confirm to execute.\n\n*The message will be sent as shown in a direct conversation with 'pedro'. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -32,7 +32,7 @@
                             "draft": {
                                 "message": "Hello"
                             },
-                            "message": "Show this plan to the user exactly as it will be sent in a direct conversation with 'pedro', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing and the direct conversation is not created."
+                            "message": "The message will be sent as shown in a direct conversation with 'pedro'. Follow the approval method returned with this plan."
                         }
                     }
                 }
@@ -95,7 +95,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Direct message in Talk**\n\nDirect message to **pedro**:\n\n> Hello\n\nThe direct conversation with **pedro** will be created if it does not exist yet.\n\nNothing was changed. Confirm to execute.\n\n*Show this plan to the user exactly as it will be sent in a direct conversation with 'pedro', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing and the direct conversation is not created.*"
+                                "text": "**Direct message in Talk**\n\nDirect message to **pedro**:\n\n> Hello\n\nThe direct conversation with **pedro** will be created if it does not exist yet.\n\nNothing was changed. Confirm to execute.\n\n*The message will be sent as shown in a direct conversation with 'pedro'. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -110,7 +110,7 @@
                             "draft": {
                                 "message": "Hello"
                             },
-                            "message": "Show this plan to the user exactly as it will be sent in a direct conversation with 'pedro', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing and the direct conversation is not created."
+                            "message": "The message will be sent as shown in a direct conversation with 'pedro'. Follow the approval method returned with this plan."
                         }
                     }
                 }
@@ -144,7 +144,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": "**Direct message in Talk**\n\nDirect message to **pedro**:\n\n> Hello\n\nThe direct conversation with **pedro** will be created if it does not exist yet.\n\nNothing was changed. Confirm to execute.\n\n*Show this plan to the user exactly as it will be sent in a direct conversation with 'pedro', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing and the direct conversation is not created.*"
+                                "text": "**Direct message in Talk**\n\nDirect message to **pedro**:\n\n> Hello\n\nThe direct conversation with **pedro** will be created if it does not exist yet.\n\nNothing was changed. Confirm to execute.\n\n*The message will be sent as shown in a direct conversation with 'pedro'. Follow the approval method returned with this plan.*"
                             }
                         ],
                         "structuredContent": {
@@ -159,7 +159,7 @@
                             "draft": {
                                 "message": "Hello"
                             },
-                            "message": "Show this plan to the user exactly as it will be sent in a direct conversation with 'pedro', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing and the direct conversation is not created."
+                            "message": "The message will be sent as shown in a direct conversation with 'pedro'. Follow the approval method returned with this plan."
                         }
                     }
                 }

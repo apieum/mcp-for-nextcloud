@@ -23,7 +23,7 @@ final class TalkPlanMessages {
 	 * @return string The instruction in the language of the current user
 	 */
 	public static function confirmationInstructionGroup(string $group, string $guests): string {
-		return Translator::t('I will create the Talk group \'%s\' with you as the owner%s. Show this plan to the user and only repeat the same call with confirm: true after they explicitly say yes; if they ask for changes, edit the plan and call the tool again. Without that confirmation the server creates nothing.', [$group, $guests]);
+		return Translator::t('I will create the Talk group \'%s\' with you as the owner%s. Follow the approval method returned with this plan.', [$group, $guests]);
 	}
 
 	/**
@@ -43,7 +43,7 @@ final class TalkPlanMessages {
 	 * @return string The instruction in the language of the current user
 	 */
 	public static function confirmationInstruction(string $conversation): string {
-		return Translator::t('Show this plan to the user exactly as it will be sent to the conversation \'%s\', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing.', [$conversation]);
+		return Translator::t('The message will be sent as shown to the conversation \'%s\'. Follow the approval method returned with this plan.', [$conversation]);
 	}
 
 	/**
@@ -53,7 +53,7 @@ final class TalkPlanMessages {
 	 * @return string The instruction in the language of the current user
 	 */
 	public static function confirmationInstructionTarget(string $person): string {
-		return Translator::t('Show this plan to the user exactly as it will be sent in a direct conversation with \'%s\', ask whether they really want it and only repeat the same call with confirm: true after they explicitly say yes. If they ask for changes, adjust the text, call the tool again and show the new plan. Without that confirmation the server publishes nothing and the direct conversation is not created.', [$person]);
+		return Translator::t('The message will be sent as shown in a direct conversation with \'%s\'. Follow the approval method returned with this plan.', [$person]);
 	}
 
 	/**

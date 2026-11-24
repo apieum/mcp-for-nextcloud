@@ -280,18 +280,9 @@ class TalkModuleTest extends TestCase {
 	public function testEveryWritingToolTellsTheAgentToPlanFirstAndConfirmAfterwards(): void {
 		$descriptions = array_column($this->module->definitions(), 'description', 'name');
 
-		// The description is the only thing the agent reads before it decides to call the tool, so the rule
-		// lives in the sentence itself and not only in this test.
 		foreach (['talk_reply', 'talk_attach_file', 'talk_quote_file', 'talk_message_user', 'talk_send_batch', 'talk_create_group'] as $name) {
-			$this->assertStringContainsString(
-				'Before sending, the agent MUST call the tool without confirm,',
-				$descriptions[$name],
-				$name,
-			);
-			$this->assertStringContainsString('only after an explicit yes repeat the', $descriptions[$name], $name);
-			$this->assertStringContainsString('confirm: true and the same arguments', $descriptions[$name], $name);
-			// Nothing may invite the agent to carry an id back: there is none to carry.
-			$this->assertStringNotContainsString('approval_id', $descriptions[$name], $name);
+			$this->assertStringContainsString('Preview without confirm', $descriptions[$name], $name);
+			$this->assertStringContainsString('follow the approval method returned by the server', $descriptions[$name], $name);
 		}
 
 		foreach (['talk_list_conversations', 'talk_read_messages', 'talk_list_unread', 'talk_read_unread'] as $name) {
