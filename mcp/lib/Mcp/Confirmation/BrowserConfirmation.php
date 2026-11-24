@@ -17,7 +17,8 @@ final class BrowserConfirmation {
 
 	public function uid(IRequest $request): ?string {
 		if ($request->getHeader('Authorization') !== '' || $request->getHeader('PHP_AUTH_USER') !== ''
-			|| $this->session->exists('app_password') || $this->session->exists('one_time_token')) {
+			|| $this->session->exists('app_password') || $this->session->exists('one_time_token')
+			|| $this->users->getImpersonatingUserID() !== null) {
 			return null;
 		}
 		$user = $this->users->getUser();

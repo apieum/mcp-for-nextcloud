@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 final class BrowserConfirmationTest extends TestCase {
 	#[DataProvider('credentials')]
-	public function testOnlyAnEnabledBrowserAccountCanConfirm(string $authorization, string $sessionKey, bool $enabled, ?string $expected): void {
+	public function testOnlyAnEnabledBrowserAccountCanConfirm(string $authorization, string $sessionKey, bool $enabled, ?string $impersonator, ?string $expected): void {
 		$request = $this->createMock(IRequest::class);
 		$request->method('getHeader')->willReturnMap([['Authorization', $authorization], ['PHP_AUTH_USER', '']]);
 		$session = $this->createMock(ISession::class);
@@ -27,17 +27,19 @@ final class BrowserConfirmationTest extends TestCase {
 		$user->method('isEnabled')->willReturn($enabled);
 		$users = $this->createMock(IUserSession::class);
 		$users->method('getUser')->willReturn($user);
+		$users->method('getImpersonatingUserID')->willReturn($impersonator);
 		self::assertSame($expected, (new BrowserConfirmation($users, $session))->uid($request));
 	}
 
 	public static function credentials(): array {
 		return [
-			['', '', true, 'alice'],
-			['', '', false, null],
-			['Bearer token', '', true, null],
-			['Basic token', '', true, null],
-			['', 'app_password', true, null],
-			['', 'one_time_token', true, null],
+			['', '', true, null, 'alice'],
+			['', '', true, 'administrator', null],
+			['', '', false, null, null],
+			['Bearer token', '', true, null, null],
+			['Basic token', '', true, null, null],
+			['', 'app_password', true, null, null],
+			['', 'one_time_token', true, null, null],
 		];
 	}
 }
