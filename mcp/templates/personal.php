@@ -51,6 +51,17 @@ $canConnect = $_['connected'] || ($_['eligible'] === true && $_['global']);
         <p class="settings-hint mcp-hint"><?= $l->t('Disconnecting blocks access to this app on the next request. It does not revoke the app password; revoke that separately in Nextcloud Settings → Security.') ?></p>
     </div>
 
+    <div class="section mcp-block" id="mcp-account-mandate">
+        <h2><?= $l->t('Standing write mandate') ?></h2>
+        <p><?= $_['mandateActive'] ? $l->t('Active') : $l->t('Inactive') ?></p>
+        <p class="settings-hint mcp-hint"><?= $l->t('Enabling the mandate allows every authorized MCP connection for your account to execute its previewed write plans without asking you to approve each one. Your existing permissions and resource limits still apply.') ?></p>
+        <form method="post" action="<?= $escape($_['mandateAction']) ?>">
+            <input type="hidden" name="requesttoken" value="<?= $escape($_['token']) ?>">
+            <input type="hidden" name="enabled" value="<?= $_['mandateActive'] ? '0' : '1' ?>">
+            <button type="submit"><?= $_['mandateActive'] ? $l->t('Revoke write mandate') : $l->t('Enable write mandate for my account') ?></button>
+        </form>
+    </div>
+
     <div class="section mcp-block" id="mcp-connections" data-scope="personal">
         <h2><?= $l->t('Your connected clients') ?></h2>
         <p class="settings-hint mcp-hint"><?= $l->t('MCP clients you signed in with OAuth. Revoking signs a client out at once; you can sign in again later.') ?></p>

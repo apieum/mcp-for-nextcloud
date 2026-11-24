@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OCA\Mcp\Settings;
 
 use OCA\Mcp\Access\Policy\PolicyUnavailable;
+use OCA\Mcp\Mcp\Confirmation\AccountMandate;
 use OCP\Util;
 use OCA\Mcp\Access\Grants\GrantPolicy;
 use OCP\AppFramework\Http\TemplateResponse;
@@ -21,6 +22,7 @@ class PersonalSettings implements ISettings {
 		private GrantPolicy $policy,
 		private IURLGenerator $urlGenerator,
 		private IUserSession $userSession,
+		private AccountMandate $mandate,
 	) {}
 
 	/** @return TemplateResponse the rendered settings section */
@@ -36,6 +38,8 @@ class PersonalSettings implements ISettings {
 			'endpoint' => $this->urlGenerator->linkToRouteAbsolute('mcp.mcp.post'),
 			'action' => $this->urlGenerator->linkToRoute('mcp.settings.personal'),
 			'token' => Util::callRegister(),
+			'mandateAction' => $this->urlGenerator->linkToRoute('mcp.mandate.update'),
+			'mandateActive' => $uid !== '' && $this->mandate->active($uid),
 			'eligible' => $eligible,
 			'connected' => $uid !== '' && $this->policy->connected($uid),
 			'global' => $this->policy->globalEnabled(),
