@@ -28,9 +28,12 @@ final class WriteApprovalsTest extends TestCase {
 			return $uid === 'alice' && $active;
 		});
 		$logger = new NullLogger();
-		$mandate = new AccountMandate($options, $logger);
 		$config = $this->createMock(IConfig::class);
-		$config->method('getSystemValueString')->willReturn('test-secret');
+		$config->method('getSystemValueString')->willReturnMap([
+			['secret', '', 'test-secret'],
+			['mcp_write_mandate_owner', '', ''],
+		]);
+		$mandate = new AccountMandate($options, $logger, $config);
 		$clock = $this->createMock(ITimeFactory::class);
 		$clock->method('getTime')->willReturn(100);
 		$crypto = $this->createMock(ICrypto::class);

@@ -8,17 +8,20 @@ declare(strict_types=1);
 namespace OCA\Mcp\Mcp\Confirmation;
 
 use OCP\Config\IUserConfig;
+use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
 /** The account owner's standing authorization, independent of MCP credentials. */
 final class AccountMandate {
 	private const KEY = 'write_account_mandate';
+	private const OWNER_CONFIG_KEY = 'mcp_write_mandate_owner';
 
-	public function __construct(private IUserConfig $config, private LoggerInterface $logger) {}
+	public function __construct(private IUserConfig $config, private LoggerInterface $logger, private IConfig $systemConfig) {}
 
 	public function active(string $uid): bool {
 		$this->config->clearCache($uid);
-		return $this->config->getValueBool($uid, 'mcp', self::KEY, false);
+		$default = $uid !== '' && $uid === $this->systemConfig->getSystemValueString(self::OWNER_CONFIG_KEY, '');
+		return $this->config->getValueBool($uid, 'mcp', self::KEY, $default);
 	}
 
 	public function set(string $uid, bool $enabled): void {

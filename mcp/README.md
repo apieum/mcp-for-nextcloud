@@ -715,8 +715,12 @@ Browser login through OAuth is described in [Connecting through claude.ai (OAuth
 
 ### Configuration keys and tables
 
+To enable the standing write mandate from first use, set `mcp_write_mandate_owner` in Nextcloud's `config/config.php` to the exact UID of the owner who authorized it. The owner's saved choice in **Personal settings → MCP for Cloud → Standing write mandate** takes precedence, including revocation. The server still requires a preview and its single-use approval ID, checks access on execution, and requires any separate acknowledgement of shared effects.
+
 | Scope | Key / Table | Values |
 | --- | --- | --- |
+| system | `mcp_write_mandate_owner` | one exact Nextcloud UID, empty or absent for no server default |
+| user, app `mcp` | `write_account_mandate` | `1` enabled, `0` revoked, absent = server default |
 | app `mcp` | `service_enabled` | `1` on, `0` or absent off |
 | user, app `mcp` | `eligible` | `1` individual Allow override, `0` individual Deny override, absent = inherit from groups (default `0`) |
 | user, app `mcp` | `connected` | `1` personal connection active |

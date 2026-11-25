@@ -9,11 +9,14 @@ namespace OCA\Mcp\Tests\Unit\Mcp\Confirmation;
 
 use OCA\Mcp\Mcp\Confirmation\AccountMandate;
 use OCP\Config\IUserConfig;
+use OCP\IConfig;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 final class AccountMandateTest extends TestCase {
-	public function testMandateIsOffByDefaultAndRevocableAcrossInstancesForOneAccount(): void {
+	#[DataProvider('ownerDefaults')]
+	public function testAccountChoiceOverridesTheServerDefaultAcrossInstances(string $owner, bool $expected): void {
 		$values = [];
 		$config = $this->createMock(IUserConfig::class);
 		$config->method('getValueBool')->willReturnCallback(
@@ -21,19 +24,33 @@ final class AccountMandateTest extends TestCase {
 				return $values[$uid][$app][$key] ?? $default;
 			},
 		);
-		$config->method('setValueBool')->willReturnCallback(
+		$config->expects($this->exactly(3))->method('setValueBool')->willReturnCallback(
 			static function (string $uid, string $app, string $key, bool $value) use (&$values): bool {
 				$values[$uid][$app][$key] = $value;
 				return true;
 			},
 		);
-		$first = new AccountMandate($config, new NullLogger());
-		$second = new AccountMandate($config, new NullLogger());
+		$system = $this->createMock(IConfig::class);
+		$system->method('getSystemValueString')->with('mcp_write_mandate_owner', '')->willReturn($owner);
+		$first = new AccountMandate($config, new NullLogger(), $system);
+		$second = new AccountMandate($config, new NullLogger(), $system);
+		self::assertSame($expected, $first->active('alice'));
+		self::assertFalse($first->active(''));
+		self::assertFalse($first->active('Alice'));
+		self::assertFalse($first->active('bob'));
+		$second->set('alice', false);
 		self::assertFalse($first->active('alice'));
 		$first->set('alice', true);
 		self::assertTrue($second->active('alice'));
 		self::assertFalse($second->active('bob'));
 		$second->set('alice', false);
 		self::assertFalse($first->active('alice'));
+	}
+
+	public static function ownerDefaults(): array {
+		return [
+			'no server owner' => ['', false],
+			'designated owner' => ['alice', true],
+		];
 	}
 }

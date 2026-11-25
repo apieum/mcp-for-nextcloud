@@ -11,6 +11,7 @@ use OCA\Mcp\Controller\MandateController;
 use OCA\Mcp\Mcp\Confirmation\AccountMandate;
 use OCA\Mcp\Mcp\Confirmation\BrowserConfirmation;
 use OCP\Config\IUserConfig;
+use OCP\IConfig;
 use OCP\IRequest;
 use OCP\ISession;
 use OCP\IURLGenerator;
@@ -32,7 +33,8 @@ final class MandateControllerTest extends TestCase {
 		$config->expects($this->once())->method('setValueBool')->with('alice', 'mcp', 'write_account_mandate', true)->willReturn(true);
 		$urls = $this->createMock(IURLGenerator::class);
 		$urls->method('linkToRoute')->willReturn('/settings/user/mcp');
-		$controller = new MandateController('mcp', $request, new BrowserConfirmation($users, $this->createMock(ISession::class)), new AccountMandate($config, new NullLogger()), $urls);
+		$mandate = new AccountMandate($config, new NullLogger(), $this->createMock(IConfig::class));
+		$controller = new MandateController('mcp', $request, new BrowserConfirmation($users, $this->createMock(ISession::class)), $mandate, $urls);
 		self::assertSame(400, $controller->update('yes')->getStatus());
 		self::assertSame(303, $controller->update('1')->getStatus());
 	}

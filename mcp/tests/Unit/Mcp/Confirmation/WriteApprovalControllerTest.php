@@ -32,10 +32,11 @@ final class WriteApprovalControllerTest extends TestCase {
 		$config = $this->createMock(IUserConfig::class);
 		$clock = $this->createMock(ITimeFactory::class);
 		$clock->method('getTime')->willReturn(100);
-		$state = new PlanState($this->createMock(IConfig::class));
+		$system = $this->createMock(IConfig::class);
+		$state = new PlanState($system);
 		$store = $this->createMock(ApprovalStore::class);
 		$store->expects($this->once())->method('approve')->with($id, $state->of('approval-owner', 'alice', []), 100)->willReturn(true);
-		$approvals = new WriteApprovals($store, new AccountMandate($config, $logger), $state, $clock, $this->createMock(ICrypto::class), $logger);
+		$approvals = new WriteApprovals($store, new AccountMandate($config, $logger, $system), $state, $clock, $this->createMock(ICrypto::class), $logger);
 		$auth = 'Bearer mcp';
 		$request = $this->createMock(IRequest::class);
 		$request->method('getHeader')->willReturnCallback(static function (string $header) use (&$auth): string {
