@@ -31,7 +31,7 @@ final class AccountMandateTest extends TestCase {
 			},
 		);
 		$system = $this->createMock(IConfig::class);
-		$system->method('getSystemValueString')->with('mcp_write_mandate_owner', '')->willReturn($owner);
+		$system->method('getSystemValue')->with('mcp_write_mandate_owner', '')->willReturn($owner);
 		$first = new AccountMandate($config, new NullLogger(), $system);
 		$second = new AccountMandate($config, new NullLogger(), $system);
 		self::assertSame($expected, $first->active('alice'));
@@ -52,5 +52,14 @@ final class AccountMandateTest extends TestCase {
 			'no server owner' => ['', false],
 			'designated owner' => ['alice', true],
 		];
+	}
+
+	public function testBooleanServerValueCannotDesignateANumericUid(): void {
+		$system = $this->createStub(IConfig::class);
+		$system->method('getSystemValue')->willReturn(true);
+		$config = $this->createStub(IUserConfig::class);
+		$config->method('getValueBool')->willReturnArgument(3);
+
+		self::assertFalse((new AccountMandate($config, new NullLogger(), $system))->active('1'));
 	}
 }

@@ -20,7 +20,7 @@ final class AccountMandate {
 
 	public function active(string $uid): bool {
 		$this->config->clearCache($uid);
-		$default = $uid !== '' && $uid === $this->systemConfig->getSystemValueString(self::OWNER_CONFIG_KEY, '');
+		$default = $uid !== '' && $uid === $this->systemConfig->getSystemValue(self::OWNER_CONFIG_KEY, '');
 		return $this->config->getValueBool($uid, 'mcp', self::KEY, $default);
 	}
 

@@ -29,10 +29,7 @@ final class WriteApprovalsTest extends TestCase {
 		});
 		$logger = new NullLogger();
 		$config = $this->createMock(IConfig::class);
-		$config->method('getSystemValueString')->willReturnMap([
-			['secret', '', 'test-secret'],
-			['mcp_write_mandate_owner', '', ''],
-		]);
+		$config->method('getSystemValueString')->willReturn('test-secret');
 		$mandate = new AccountMandate($options, $logger, $config);
 		$clock = $this->createMock(ITimeFactory::class);
 		$clock->method('getTime')->willReturn(100);
