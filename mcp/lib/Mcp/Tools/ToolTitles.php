@@ -114,6 +114,7 @@ final class ToolTitles {
 			'deck_create_stack' => Translator::t('Create list in Deck'),
 			'deck_delete_stack' => Translator::t('Delete Deck list'),
 			'deck_delete_board' => Translator::t('Delete Deck board'),
+			'deck_add_card_comment' => Translator::t('Add Deck card comment'),
 			'deck_set_card_done' => Translator::t('Change Deck card completion'),
 			'deck_set_card_archived' => Translator::t('Change Deck card archive state'),
 			// Talk

@@ -37,6 +37,7 @@ final class DeckToolCatalog {
 		\OCA\Mcp\Modules\Deck\Tools\CreateLabel::class,
 		\OCA\Mcp\Modules\Deck\Tools\UpdateLabel::class,
 		\OCA\Mcp\Modules\Deck\Tools\DeleteLabel::class,
+		\OCA\Mcp\Modules\Deck\Tools\AddCardComment::class,
 	];
 
 	/** Constant holder. */

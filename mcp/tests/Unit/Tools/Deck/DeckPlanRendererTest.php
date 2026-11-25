@@ -315,7 +315,15 @@ final class DeckPlanRendererTest extends TestCase {
 			'deck_edit_card' => $this->module->preview('deck_edit_card', ['cardId' => 7, 'title' => 'Tarefa Nova'], 'alice'),
 			'deck_move_card' => $this->module->preview('deck_move_card', ['cardId' => 7, 'stackId' => 11], 'alice'),
 			'deck_delete_card' => $this->module->preview('deck_delete_card', ['cardId' => 7], 'alice'),
-		] + $this->structurePlans() + $this->dependencyPlans() + \OCA\Mcp\Tests\Unit\Modules\Deck\LabelPlanFixture::plans() + CardStatusFixture::plans(new \OCA\Mcp\Mcp\Confirmation\PlanState($this->createMock(\OCP\IConfig::class))));
+		] + $this->commentPlans() + $this->structurePlans() + $this->dependencyPlans() + \OCA\Mcp\Tests\Unit\Modules\Deck\LabelPlanFixture::plans() + CardStatusFixture::plans(new \OCA\Mcp\Mcp\Confirmation\PlanState($this->createMock(\OCP\IConfig::class))));
+	}
+
+	/** @return array<string, array<string, mixed>> An exact comment rendered in the shared-board plan. */
+	private function commentPlans(): array {
+		return ['deck_add_card_comment' => [
+			'card' => ['id' => 7, 'title' => 'Card'], 'board' => ['id' => 5, 'name' => 'Board'],
+			'actorId' => 'alice', 'message' => "Hello.\nSecond line.", 'requiresSharedConfirmation' => true,
+		]];
 	}
 
 	/**
@@ -405,7 +413,7 @@ final class DeckPlanRendererTest extends TestCase {
 			'deck_edit_card' => $this->assigneePlan(),
 			'deck_move_card' => $this->module->preview('deck_move_card', ['cardId' => 7, 'stackId' => 11], 'alice'),
 			'deck_delete_card' => $this->module->preview('deck_delete_card', ['cardId' => 7], 'alice'),
-		] + $this->structurePlans() + $this->dependencyPlans() + \OCA\Mcp\Tests\Unit\Modules\Deck\LabelPlanFixture::plans() + CardStatusFixture::plans(new \OCA\Mcp\Mcp\Confirmation\PlanState($this->createMock(\OCP\IConfig::class))));
+		] + $this->commentPlans() + $this->structurePlans() + $this->dependencyPlans() + \OCA\Mcp\Tests\Unit\Modules\Deck\LabelPlanFixture::plans() + CardStatusFixture::plans(new \OCA\Mcp\Mcp\Confirmation\PlanState($this->createMock(\OCP\IConfig::class))));
 	}
 
 	public function testMarkdownInTitleBoardAndListStaysLiteral(): void {

@@ -3883,6 +3883,65 @@
                         }
                     },
                     {
+                        "name": "deck_add_card_comment",
+                        "title": "Add Deck card comment",
+                        "description": "Adds a comment to one Deck card as the authenticated Nextcloud account. Requires deck.edit and native Deck read access. Check the comment receipt before requesting another approval.",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                "boardId": {
+                                    "type": "integer",
+                                    "description": "ID of the board the card must belong to.",
+                                    "minimum": 1
+                                },
+                                "cardId": {
+                                    "type": "integer",
+                                    "description": "Id of the Deck card.",
+                                    "minimum": 1
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "description": "Exact comment text. Mentions may notify people.",
+                                    "minLength": 1,
+                                    "maxLength": 1000
+                                },
+                                "expectedActorId": {
+                                    "type": "string",
+                                    "description": "Optional assertion of the authenticated Nextcloud account ID. A mismatch refuses the call.",
+                                    "minLength": 1,
+                                    "maxLength": 255
+                                },
+                                "confirm_shared": {
+                                    "type": "boolean",
+                                    "description": "Set to true only after the user has confirmed the change on somebody else's board."
+                                },
+                                "plan_state": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128,
+                                    "description": "Opaque value of the plan. Send it back unchanged together with confirm: true. If the state changed since the plan, nothing is written and the answer is the new plan."
+                                },
+                                "confirm": {
+                                    "type": "boolean",
+                                    "description": "Send true only after you have shown the plan of this call to the user and the user explicitly said yes. Without it nothing is changed and the answer is the plan."
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                                "boardId",
+                                "cardId",
+                                "message"
+                            ]
+                        },
+                        "annotations": {
+                            "title": "Add Deck card comment",
+                            "readOnlyHint": false,
+                            "destructiveHint": true,
+                            "idempotentHint": false,
+                            "openWorldHint": false
+                        }
+                    },
+                    {
                         "name": "talk_list_conversations",
                         "title": "List Talk conversations",
                         "description": "Lists the Talk conversations the authenticated user takes part in, with the number of unread messages Talk shows in its own list. When that count cannot be read, the conversation is still listed and unreadMessages is null. A conversation the lobby bars is still listed and unreadMessages is 0. A lobby whose timer has already passed is treated as open for this answer only, and a lobby that cannot be read counts as closed. The display name is the name Talk already stored: a direct conversation names the other participant from the stored pair of account ids, or from the participants already in the room when the stored name is empty or still the legacy account id, and the name is empty when that read fails or the other participant cannot be identified, a group with no stored name is empty, and the release notes conversation and a password request use the names Talk gives them. It changes no state: it does not mark anything as read, does not open a lobby, does not rename a conversation, does not touch notifications and does not touch activity.",

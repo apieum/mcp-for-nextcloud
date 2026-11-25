@@ -29,6 +29,7 @@ final class DeckPlanRenderer extends DeckPlanValues {
 		try {
 			$zone = $this->resolveZone($plan);
 			return match ($tool) {
+				'deck_add_card_comment' => $this->renderComment($plan),
 				'deck_set_card_done', 'deck_set_card_archived' => (new CardStatusText())->render($plan),
 				'deck_link_card_file' => \OCA\Mcp\Modules\Deck\Attachments\CardLinkPlan::render($plan),
 				'deck_unlink_card_file' => $this->renderUnlinkFile($plan),
@@ -50,6 +51,18 @@ final class DeckPlanRenderer extends DeckPlanValues {
 		} catch (\Throwable) {
 			return null;
 		}
+	}
+
+	/** @param array<string, mixed> $plan Authorized card, actor, audience and exact message. */
+	private function renderComment(array $plan): string {
+		$text = Translator::t('Add a comment to Deck card %s (#%s) on %s (#%s) as %s.', [
+			PlanText::em($plan['card']['title']), (string)$plan['card']['id'],
+			PlanText::em($plan['board']['name']), (string)$plan['board']['id'], PlanText::quoted($plan['actorId']),
+		]) . "\n\n" . PlanText::quoted($plan['message']);
+		if ($plan['requiresSharedConfirmation']) {
+			$text .= "\n\n" . Translator::t('Current and future board members can read this comment.');
+		}
+		return $text . "\n\n" . Translator::t('Mentions may notify people.');
 	}
 
 	/**

@@ -126,6 +126,19 @@ final class DeckToolModuleTest extends TestCase {
 		self::assertStringContainsString('unassign', $definition['description']);
 	}
 
+	/** A client can assert the authenticated actor and bind the write to the expected board. */
+	public function testCardCommentDeclaresItsTargetAndAuthenticatedActor(): void {
+		$definition = $this->definitionOf('deck_add_card_comment');
+		self::assertSame('edit', $definition['operation']);
+		$schema = $definition['inputSchema'];
+		self::assertSame(['boardId', 'cardId', 'message'], $schema['required']);
+		self::assertSame(1000, $schema['properties']['message']['maxLength']);
+		self::assertArrayHasKey('expectedActorId', $schema['properties']);
+		self::assertArrayNotHasKey('actorId', $schema['properties']);
+		self::assertArrayHasKey('plan_state', $schema['properties']);
+		self::assertArrayHasKey('confirm_shared', $schema['properties']);
+	}
+
 	public function testLabelSchemaAndHandlerShareTheDefaultLimit(): void {
 		$schema = $this->definitionOf('deck_list_labels')['inputSchema'];
 		self::assertSame(\OCA\Mcp\Modules\Deck\Reading\ListLabelsHandler::DEFAULT_LIMIT,
@@ -158,7 +171,7 @@ final class DeckToolModuleTest extends TestCase {
 			'deck_delete_board',
 			'deck_set_card_done',
 			'deck_set_card_archived',
-			'deck_create_label', 'deck_update_label', 'deck_delete_label',
+			'deck_create_label', 'deck_update_label', 'deck_delete_label', 'deck_add_card_comment',
 		], array_column(\OCA\Mcp\Tests\Unit\Tools\Deck\DeckTestModule::definitions($this->module), 'name'));
 	}
 
@@ -388,8 +401,11 @@ final class DeckToolModuleTest extends TestCase {
 		$module->call(ListBoardsHandler::TOOL, [], 'alice');
 	}
 
-	public function testEveryDefinitionIsHandled(): void {
+	public function testLegacyDefinitionsReachTheAppCheck(): void {
 		foreach (\OCA\Mcp\Tests\Unit\Tools\Deck\DeckTestModule::definitions($this->module) as $definition) {
+			if ($definition['name'] === 'deck_add_card_comment') {
+				continue; // The catalog dispatches this tool directly, with the registry app check.
+			}
 			$appManager = $this->createMock(IAppManager::class);
 			$appManager->method('isEnabledForUser')->willReturn(false);
 			$module = $this->module(
